@@ -20,8 +20,9 @@ def display_line(image, lines):
     line_image = np.zeros_like(image)
     if lines is not None:
         for line in lines:
-            x1, y1, x2, y2 = line.reshape(4)
-            cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 10)
+            if line is not None:
+                x1, y1, x2, y2 = line.reshape(4)
+                cv2.line(line_image, (x1, y1), (x2, y2), (255, 0, 0), 10)
     return line_image
 
 def average_slope_intercept(image, lines):
@@ -44,13 +45,13 @@ def average_slope_intercept(image, lines):
     return np.array([left_line, right_line])
 
 def make_coordinates(image, line_parameters):
-    print(line_parameters)
-    slope, intercept = line_parameters
-    y1 = image.shape[0]
-    y2 = int(y1 * 3 / 5)
-    x1 = int((y1 - intercept) / slope)
-    x2 = int((y2 - intercept) / slope)
-    return np.array([x1, y1, x2, y2])
+    if type(line_parameters) is not np.float64:
+        slope, intercept = line_parameters
+        y1 = image.shape[0]
+        y2 = int(y1 * 3 / 5)
+        x1 = int((y1 - intercept) / slope)
+        x2 = int((y2 - intercept) / slope)
+        return np.array([x1, y1, x2, y2])
 
 '''
 image = cv2.imread('test_image.jpg')
