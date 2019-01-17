@@ -44,6 +44,7 @@ def average_slope_intercept(image, lines):
     return np.array([left_line, right_line])
 
 def make_coordinates(image, line_parameters):
+    print(line_parameters)
     slope, intercept = line_parameters
     y1 = image.shape[0]
     y2 = int(y1 * 3 / 5)
@@ -51,6 +52,7 @@ def make_coordinates(image, line_parameters):
     x2 = int((y2 - intercept) / slope)
     return np.array([x1, y1, x2, y2])
 
+'''
 image = cv2.imread('test_image.jpg')
 lane_image = np.copy(image)
 canny_image = canny(lane_image)
@@ -59,6 +61,22 @@ lines = cv2.HoughLinesP(cropped_image, 2, np.pi/180, 100, np.array([]), minLineL
 averaged_lines = average_slope_intercept(lane_image, lines)
 line_image = display_line(image, averaged_lines)
 combo_image = cv2.addWeighted(lane_image, 0.8, line_image, 1, 1)
-
 cv2.imshow('result', combo_image)
 cv2.waitKey(0)
+'''
+
+cap = cv2.VideoCapture('test2.mp4')
+while cap.isOpened():
+    _, frame = cap.read()
+    canny_image = canny(frame)
+    cropped_image = region_of_interest(canny_image)
+    lines = cv2.HoughLinesP(cropped_image, 2, np.pi / 180, 100, np.array([]), minLineLength=40, maxLineGap=5)
+    averaged_lines = average_slope_intercept(frame, lines)
+    line_image = display_line(frame, averaged_lines)
+    combo_image = cv2.addWeighted(frame, 0.8, line_image, 1, 1)
+    cv2.imshow('result', combo_image)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()
